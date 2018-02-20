@@ -9,11 +9,9 @@ import {
     PerspectiveCamera
 } from "three";
 
-import Sea from "@core/objects/sea/Sea";
-import Sky from "@core/objects/sky/Sky";
-import {
-    Airplane
-} from "@core/objects/airplane";
+import { Sea } from "@core/objects/sea";
+import { Sky }from "@core/objects/sky";
+import { Airplane } from "@core/objects/airplane";
 
 const DEFAULT_FRAMERATE = 1000/60;
 const framerate = 1000/60;
