@@ -2,7 +2,6 @@ import {
     Fog,
     Scene,
     Light,
-    Clock,
     Vector3,
     WebGLRenderer,
     HemisphereLight,
@@ -17,7 +16,6 @@ import {
 } from "@core/objects/airplane";
 
 const DEFAULT_FRAMERATE = 1000/60;
-
 const framerate = 1000/60;
 
 const COLORS = {
@@ -66,6 +64,7 @@ export default class Core {
             else
                 this.scene.add(item.mesh || item);
         });
+
         this.loop();
     }
 
@@ -159,11 +158,12 @@ export default class Core {
 
         let then = Date.now();
         let now = null;
+        let delta;
 
         const frame = () => {
             this.renderer.render(this.scene, this.camera);
 
-            airplane!.partials.propeller.mesh.rotation.x += .3 ;
+            airplane!.partials.propeller.mesh.rotation.x += .3 * (framerate / DEFAULT_FRAMERATE) ;
             sky!.rotation.z += .005 * (framerate / DEFAULT_FRAMERATE);
             sea!.rotation.z += .01 * (framerate / DEFAULT_FRAMERATE);
         };
@@ -171,11 +171,12 @@ export default class Core {
         const framer = () => {
             requestAnimationFrame(framer);
 
-            now = Date.now();
-            let elapsed = now - then;
+            now = +(new Date());
+            delta = now - then;
 
-            if ( elapsed > framerate ) {
-                then = now - ( elapsed % framerate );
+            if ( delta > framerate ) {
+                then = now - ( delta % framerate );
+
                 frame();
             }
         };
