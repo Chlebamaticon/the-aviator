@@ -172,12 +172,13 @@ export default class Core {
         const step:number = 1/60;
 
         const frame = (timestamp:number):void => {
-            const now = new Date();
+            const now: number = +(new Date());
 
             if(!last)
                 last = now;
 
-            dt += Math.min(1, (now - last) / 1000 );
+            dt += Math.min(1,
+                ((now - last) / 1000) );
 
             while(dt > step) {
                 dt -= step;
