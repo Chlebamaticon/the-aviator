@@ -12,6 +12,7 @@ import {
 import { Sea } from "@core/objects/sea";
 import { Sky }from "@core/objects/sky";
 import { Airplane } from "@core/objects/airplane";
+import { rename } from "fs";
 
 const DEFAULT_FRAMERATE = 1000/60;
 const framerate = 1000/60;
@@ -154,32 +155,42 @@ export default class Core {
         const sky = this.objects.get('sky');
         const airplane = this.objects.get('plane');
 
-        let then = Date.now();
-        let now = null;
-        let delta;
+        const update = (step:number) => {
+            const propellerSpeed = 5;
+            const skySpeed = 0.1;
+            const seaSpeed = 0.1;
 
-        const frame = () => {
-            this.renderer.render(this.scene, this.camera);
+            airplane!.partials.propeller.mesh.rotation.x += propellerSpeed * step;
+            sky!.rotation.z += skySpeed * step;
+            sea!.rotation.z += seaSpeed * step;
+        }
 
-            airplane!.partials.propeller.mesh.rotation.x += .3 * (framerate / DEFAULT_FRAMERATE) ;
-            sky!.rotation.z += .005 * (framerate / DEFAULT_FRAMERATE);
-            sea!.rotation.z += .01 * (framerate / DEFAULT_FRAMERATE);
-        };
+        const render = () => this.renderer.render(this.scene, this.camera);
 
-        const framer = () => {
-            requestAnimationFrame(framer);
+        let last:any      = null;
+        let dt:number     = 0;
+        const step:number = 1/60;
 
-            now = +(new Date());
-            delta = now - then;
+        const frame = (timestamp:number):void => {
+            const now = new Date();
 
-            if ( delta > framerate ) {
-                then = now - ( delta % framerate );
+            if(!last)
+                last = now;
 
-                frame();
+            dt += Math.min(1, (now - last) / 1000 );
+
+            while(dt > step) {
+                dt -= step;
+                update(step);
             }
+
+            render()
+
+            last = now;
+            requestAnimationFrame(frame);            
         };
 
-        framer();
+        requestAnimationFrame(frame);
     }
 
     private adjustSize () {
